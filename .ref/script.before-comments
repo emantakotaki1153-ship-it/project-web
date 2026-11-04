@@ -1,0 +1,151 @@
+// The three moves. Each one says what it beats and with which verb.
+const MOVES = {
+  rock:     { emoji: "✊", name: "Rock",     beats: "scissors", verb: "crushes" },
+  paper:    { emoji: "✋", name: "Paper",    beats: "rock",     verb: "covers" },
+  scissors: { emoji: "✌️", name: "Scissors", beats: "paper",    verb: "cut" }
+};
+const NAMES = ["rock", "paper", "scissors"];
+const KEYS = { r: "rock", p: "paper", s: "scissors" };
+
+const byId = (id) => document.getElementById(id);
+const root = document.documentElement; // <html>: it carries data-theme
+const themeColor = document.querySelector('meta[name="theme-color"]');
+const buttons = document.querySelectorAll(".choice");
+const hands = {
+  player: { emoji: byId("playerHand"), name: byId("playerChoice") },
+  cpu:    { emoji: byId("cpuHand"),    name: byId("cpuChoice") }
+};
+const state = { win: 0, lose: 0, draw: 0, round: 0, streak: 0, busy: false };
+let revealTimer;
+
+// Picks one of the three names at random.
+function randomMove() {
+  const i = Math.floor(Math.random() * NAMES.length);
+  return NAMES[i];
+}
+
+// outcome = "win" when the player's move beats the computer's move.
+function judge(playerMove, cpuMove) {
+  if (playerMove === cpuMove) return "draw";
+  return MOVES[playerMove].beats === cpuMove ? "win" : "lose";
+}
+
+function showMove(side, move, waitingText = "Waiting…") {
+  const hand = hands[side];
+  const known = move !== null;
+  hand.emoji.textContent = known ? MOVES[move].emoji : "?";
+  hand.emoji.className = known ? "hand-emoji" : "hand-emoji is-unknown";
+  hand.name.textContent = known ? MOVES[move].name : waitingText;
+  hand.name.classList.toggle("is-known", known);
+}
+
+function showText(outcome, title, sub) {
+  byId("result").dataset.state = outcome;
+  byId("resultTitle").textContent = title;
+  byId("resultSub").textContent = sub;
+}
+
+function updateScore() {
+  byId("playerScore").textContent = state.win;
+  byId("cpuScore").textContent = state.lose;
+  byId("drawScore").textContent = state.draw;
+  byId("streakNum").textContent = state.streak;
+  byId("streakPill").hidden = state.streak < 2; // the badge appears from two wins in a row
+}
+
+function showResult(outcome, playerMove, cpuMove) {
+  const player = MOVES[playerMove], cpu = MOVES[cpuMove];
+  if (outcome === "draw") {
+    showText(outcome, "It’s a draw!", `Both of you chose ${player.name.toLowerCase()}.`);
+    return;
+  }
+  const winner = outcome === "win" ? player : cpu;
+  const loser = outcome === "win" ? cpu : player;
+  const title = outcome === "win" ? "You win!" : "Computer wins!";
+  showText(outcome, title, `${winner.name} ${winner.verb} ${loser.name.toLowerCase()}.`);
+}
+
+function finishRound(playerMove) {
+  const cpuMove = randomMove();
+  const outcome = judge(playerMove, cpuMove);
+  if (outcome === "win") {
+    state.win++;
+    state.streak++;
+  } else if (outcome === "lose") {
+    state.lose++;
+    state.streak = 0;
+  } else {
+    state.draw++;
+    state.streak = 0;
+  }
+
+  byId("arena").classList.remove("is-shaking");
+  showMove("cpu", cpuMove);
+  byId("cpuHand").classList.add("is-revealed");
+  showResult(outcome, playerMove, cpuMove);
+  updateScore();
+  state.busy = false;
+  buttons.forEach((button) => { button.disabled = false; });
+}
+
+function playRound(move) {
+  if (state.busy) return; // one round at a time
+  state.busy = true;
+  state.round++;
+  byId("roundNum").textContent = state.round;
+  showMove("player", move);
+  showMove("cpu", null, "Thinking…");
+  buttons.forEach((button) => {
+    button.disabled = true;
+    button.classList.toggle("is-selected", button.dataset.move === move);
+  });
+  showText("idle", "Rock… paper… scissors…", "The machine is making its move.");
+  byId("arena").classList.add("is-shaking");
+  revealTimer = setTimeout(() => finishRound(move), 650);
+}
+
+function resetGame() {
+  clearTimeout(revealTimer); // a round in progress must not land on the fresh board
+  state.win = 0;
+  state.lose = 0;
+  state.draw = 0;
+  state.round = 0;
+  state.streak = 0;
+  state.busy = false;
+  buttons.forEach((button) => {
+    button.disabled = false;
+    button.classList.remove("is-selected");
+  });
+  showMove("player", null);
+  showMove("cpu", null);
+  byId("roundNum").textContent = "—";
+  byId("arena").classList.remove("is-shaking");
+  showText("idle", "Make your move", "Rock beats scissors, scissors beat paper, paper beats rock.");
+  updateScore();
+}
+
+// Dark or light. The first value was written in <head>, before the page was painted.
+function setTheme(theme) {
+  root.dataset.theme = theme;
+  byId("themeBtn").textContent = theme === "dark" ? "🌙 Dark" : "☀️ Light";
+  // the browser bar takes the colour of the page, read back from the CSS
+  themeColor.content = getComputedStyle(root).getPropertyValue("--bg").trim();
+}
+
+buttons.forEach((button) => {
+  button.onclick = () => playRound(button.dataset.move);
+});
+
+document.onkeydown = (event) => {
+  const move = KEYS[event.key.toLowerCase()];
+  if (!move) return;
+  // ignore a held-down key and browser shortcuts such as Ctrl+R
+  if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+  event.preventDefault();
+  playRound(move);
+};
+
+byId("themeBtn").onclick = () => setTheme(root.dataset.theme === "dark" ? "light" : "dark");
+byId("resetBtn").onclick = resetGame;
+setTheme(root.dataset.theme);
+resetGame();

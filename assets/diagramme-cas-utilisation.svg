@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="680" viewBox="0 0 1240 680" role="img" aria-labelledby="uc-title uc-desc">
+<title id="uc-title">Diagramme de cas d’utilisation — Pierre, Papier, Ciseaux</title>
+<desc id="uc-desc">Le joueur lance une manche ; le système choisit un coup, détermine le gagnant et met à jour le score. Le joueur peut aussi réinitialiser la partie.</desc>
+<rect width="1240" height="680" fill="#F6F7F8"/>
+<defs>
+<marker id="openBlue" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1.5 1.5 L10.5 6 L1.5 10.5" fill="none" stroke="#0868E0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<text x="56" y="44" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#18212B" text-anchor="start">UML — Diagramme de cas d’utilisation</text>
+<text x="56" y="70" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="15.5" font-weight="400" fill="#5B6572" text-anchor="start">Pierre · Papier · Ciseaux — application web statique</text>
+<rect x="250" y="96" width="740" height="530" rx="18" fill="#FFFFFF" stroke="#9CBFDF" stroke-width="1.5"/>
+<text x="620" y="130" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17" font-weight="600" fill="#18212B" text-anchor="middle">Application web Pierre · Papier · Ciseaux</text>
+<ellipse cx="430" cy="225" rx="130" ry="48" fill="#EAF2FC" stroke="#0868E0" stroke-width="1.8"/>
+<text x="430" y="232" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="20" font-weight="600" fill="#18212B" text-anchor="middle">Jouer une manche</text>
+<ellipse cx="430" cy="505" rx="125" ry="40" fill="#EAF2FC" stroke="#0868E0" stroke-width="1.8"/>
+<text x="430" y="511.125" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17.5" font-weight="600" fill="#18212B" text-anchor="middle">Réinitialiser la partie</text>
+<ellipse cx="835" cy="190" rx="135" ry="40" fill="#EAF2FC" stroke="#0868E0" stroke-width="1.8"/>
+<text x="835" y="196.125" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17.5" font-weight="600" fill="#18212B" text-anchor="middle">Choisir un coup</text>
+<ellipse cx="835" cy="300" rx="135" ry="40" fill="#EAF2FC" stroke="#0868E0" stroke-width="1.8"/>
+<text x="835" y="296.94" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17" font-weight="600" fill="#18212B" text-anchor="middle">Tirer le coup de</text>
+<text x="835" y="319.04" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17" font-weight="600" fill="#18212B" text-anchor="middle">l’ordinateur</text>
+<ellipse cx="835" cy="410" rx="135" ry="40" fill="#EAF2FC" stroke="#0868E0" stroke-width="1.8"/>
+<text x="835" y="415.95" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17" font-weight="600" fill="#18212B" text-anchor="middle">Déterminer le gagnant</text>
+<ellipse cx="835" cy="520" rx="135" ry="40" fill="#EAF2FC" stroke="#0868E0" stroke-width="1.8"/>
+<text x="835" y="525.95" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="17" font-weight="600" fill="#18212B" text-anchor="middle">Mettre à jour le score</text>
+<line x1="560" y1="225" x2="700" y2="190" stroke="#0868E0" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="6 4" marker-end="url(#openBlue)"/>
+<text x="637" y="195.75" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="14.5" font-weight="400" fill="#0868E0" text-anchor="middle" font-style="italic" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" paint-order="stroke">«include»</text>
+<line x1="560" y1="225" x2="700" y2="300" stroke="#0868E0" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="6 4" marker-end="url(#openBlue)"/>
+<text x="637" y="256.25" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="14.5" font-weight="400" fill="#0868E0" text-anchor="middle" font-style="italic" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" paint-order="stroke">«include»</text>
+<line x1="560" y1="225" x2="700" y2="410" stroke="#0868E0" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="6 4" marker-end="url(#openBlue)"/>
+<text x="637" y="316.75" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="14.5" font-weight="400" fill="#0868E0" text-anchor="middle" font-style="italic" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" paint-order="stroke">«include»</text>
+<line x1="560" y1="225" x2="700" y2="520" stroke="#0868E0" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="6 4" marker-end="url(#openBlue)"/>
+<text x="637" y="377.25" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="14.5" font-weight="400" fill="#0868E0" text-anchor="middle" font-style="italic" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" paint-order="stroke">«include»</text>
+<g stroke="#18212B" stroke-width="2" stroke-linecap="round" fill="none">
+  <circle cx="120" cy="272" r="13" fill="#18212B" stroke="none"/>
+  <line x1="120" y1="285" x2="120" y2="330"/>
+  <line x1="93" y1="302" x2="147" y2="302"/>
+  <line x1="120" y1="330" x2="99" y2="362"/>
+  <line x1="120" y1="330" x2="141" y2="362"/>
+</g>
+<text x="120" y="392" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="19" font-weight="600" fill="#18212B" text-anchor="middle">Joueur</text>
+<text x="120" y="412" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5B6572" text-anchor="middle">acteur principal</text>
+<g stroke="#C66A36" stroke-width="2" stroke-linecap="round" fill="none">
+  <circle cx="1130" cy="272" r="13" fill="#C66A36" stroke="none"/>
+  <line x1="1130" y1="285" x2="1130" y2="330"/>
+  <line x1="1103" y1="302" x2="1157" y2="302"/>
+  <line x1="1130" y1="330" x2="1109" y2="362"/>
+  <line x1="1130" y1="330" x2="1151" y2="362"/>
+</g>
+<text x="1130" y="392" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="19" font-weight="600" fill="#18212B" text-anchor="middle">Ordinateur</text>
+<text x="1130" y="412" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5B6572" text-anchor="middle">acteur secondaire (hasard)</text>
+<line x1="147" y1="302" x2="300" y2="225" stroke="#18212B" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="147" y1="302" x2="305" y2="505" stroke="#18212B" stroke-width="1.5" stroke-linecap="round"/>
+<line x1="970" y1="300" x2="1103" y2="302" stroke="#C66A36" stroke-width="1.5" stroke-linecap="round"/>
+<text x="56" y="658" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="400" fill="#5B6572" text-anchor="start">Trait plein : association acteur / cas d’utilisation     ·     «include» : comportement obligatoire</text>
+<text x="1184" y="658" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="400" fill="#8A94A3" text-anchor="end">Programmation Web 1 · S3 — Groupe 2</text>
+</svg>

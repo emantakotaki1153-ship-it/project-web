@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070c16">
+  <title>Rock · Paper · Scissors</title>
+
+  <!-- The theme is picked here, above the stylesheets, so the page is never
+       painted once in the wrong colours. The button in the topbar (script.js)
+       only flips this value afterwards. -->
+  <script>
+    document.documentElement.dataset.theme =
+      matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  </script>
+
+  <!-- Typographies (repli automatique sur les polices système si hors ligne) -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✊</span>
+        <span class="brand-text">RPS<span class="brand-dot">.</span></span>
+      </div>
+
+      <div class="topbar-actions">
+        <span class="course-chip">Web 1 · S3 · Groupe 2</span>
+        <button class="btn" id="themeBtn" type="button" title="Dark or light page">🌙 Dark</button>
+        <button class="btn" id="resetBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7" />
+            <path d="M3 4v5h5" />
+          </svg>
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Classic duel · Browser edition</p>
+          <h1 class="hero-title">
+            <span class="word">Rock.</span>
+            <span class="word word-paper">Paper.</span>
+            <span class="word word-scissors">Scissors.</span>
+          </h1>
+        </div>
+        <p class="hero-sub">
+          Pick a move, outsmart the machine, and keep the score.
+          <span class="key-hint">You can also play with <kbd>R</kbd> <kbd>P</kbd> <kbd>S</kbd>.</span>
+        </p>
+      </section>
+
+      <div class="game-grid">
+        <section class="panel score-panel">
+          <div class="score-grid">
+            <div class="score-item">
+              <span class="score-label">You</span>
+              <strong class="score-value score-player" id="playerScore">0</strong>
+            </div>
+            <div class="score-item">
+              <span class="score-label">Draws</span>
+              <strong class="score-value score-draw" id="drawScore">0</strong>
+            </div>
+            <div class="score-item">
+              <span class="score-label">Computer</span>
+              <strong class="score-value score-cpu" id="cpuScore">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel arena-panel">
+          <div class="arena-top">
+            <span class="pill">Round <b id="roundNum">—</b></span>
+            <span class="pill streak-pill" id="streakPill" hidden>
+              🔥 <b id="streakNum">0</b>&nbsp;in a row
+            </span>
+          </div>
+
+          <div class="arena" id="arena">
+            <div class="hand-tile is-player">
+              <p class="hand-label"><span class="dot dot-player" aria-hidden="true"></span>You</p>
+              <div class="hand-emoji is-unknown" id="playerHand" aria-hidden="true">?</div>
+              <p class="hand-name" id="playerChoice">Waiting…</p>
+            </div>
+
+            <div class="versus" aria-hidden="true"><span>VS</span></div>
+
+            <div class="hand-tile is-cpu">
+              <p class="hand-label"><span class="dot dot-cpu" aria-hidden="true"></span>Computer</p>
+              <div class="hand-emoji is-unknown" id="cpuHand" aria-hidden="true">?</div>
+              <p class="hand-name" id="cpuChoice">Waiting…</p>
+            </div>
+          </div>
+
+          <div class="result" id="result" data-state="idle" role="status" aria-live="polite">
+            <p class="result-title" id="resultTitle">Make your move</p>
+            <p class="result-sub" id="resultSub">Rock beats scissors, scissors beat paper, paper beats rock.</p>
+          </div>
+        </section>
+
+        <section class="panel choices-panel">
+          <div class="panel-head">
+            <h2>Your move</h2>
+            <span class="panel-hint">tap or press a key</span>
+          </div>
+
+          <div class="choices">
+            <button class="choice" type="button" data-move="rock" aria-label="Play Rock">
+              <span class="choice-emoji" aria-hidden="true">✊</span>
+              <span class="choice-name">Rock</span>
+              <kbd class="choice-key">R</kbd>
+            </button>
+            <button class="choice" type="button" data-move="paper" aria-label="Play Paper">
+              <span class="choice-emoji" aria-hidden="true">✋</span>
+              <span class="choice-name">Paper</span>
+              <kbd class="choice-key">P</kbd>
+            </button>
+            <button class="choice" type="button" data-move="scissors" aria-label="Play Scissors">
+              <span class="choice-emoji" aria-hidden="true">✌️</span>
+              <span class="choice-name">Scissors</span>
+              <kbd class="choice-key">S</kbd>
+            </button>
+          </div>
+
+          <p class="tip">
+            Every round counts — there is no finish line. Hit <strong>Reset</strong> whenever you want a clean slate.
+          </p>
+        </section>
+
+        <section class="panel rules-panel">
+          <div class="panel-head">
+            <h2>The rules</h2>
+            <span class="panel-hint">classic trio</span>
+          </div>
+          <ul class="rules-list">
+            <li>
+              <span class="rule-icons" aria-hidden="true">✊ <span class="rule-arrow">→</span> ✌️</span>
+              <span>Rock crushes scissors</span>
+            </li>
+            <li>
+              <span class="rule-icons" aria-hidden="true">✌️ <span class="rule-arrow">→</span> ✋</span>
+              <span>Scissors cut paper</span>
+            </li>
+            <li>
+              <span class="rule-icons" aria-hidden="true">✋ <span class="rule-arrow">→</span> ✊</span>
+              <span>Paper covers rock</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Rock · Paper · Scissors</span>
+      <span>Built with HTML, CSS &amp; JavaScript</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

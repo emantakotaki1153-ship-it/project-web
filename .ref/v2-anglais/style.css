@@ -1,0 +1,697 @@
+/* Rock · Paper · Scissors — dark + light themes, desktop and phone layout */
+
+* { box-sizing: border-box; }
+
+/* Every colour the page uses is named here once.
+   The light theme at the bottom is the same list with different values,
+   so no selector is ever repeated between the two themes. */
+:root {
+  color-scheme: dark;
+
+  /* the page */
+  --bg: #070c16;
+  --bg-top: #0b1322;
+
+  /* text, from the strongest grey to the weakest */
+  --text: #f5f2e9;
+  --muted: #a3aec1;
+  --soft: #8e9bb0;
+  --ghost: #6f7d95; /* the "?" of an empty hand: faint on purpose, and it reads in both themes */
+
+  /* An accent is stored as three numbers instead of as a colour, so one name
+     gives both the solid colour and any wash of it: rgb(var(--teal-rgb) / .14).
+     A new theme only has to change the three numbers. */
+  --teal-rgb: 62 224 196;
+  --coral-rgb: 255 111 94;
+  --gold-rgb: 255 200 87;
+  --teal: rgb(var(--teal-rgb));
+  --coral: rgb(var(--coral-rgb));
+  --gold: rgb(var(--gold-rgb));
+
+  /* hairlines */
+  --line: rgba(255, 255, 255, .09);
+  --line-strong: rgba(255, 255, 255, .16);
+
+  /* what the boxes are painted with */
+  --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .022));
+  --wash: rgba(255, 255, 255, .03);        /* a box at rest */
+  --wash-strong: rgba(255, 255, 255, .07); /* the same box hovered, and the key caps */
+  --inset: rgba(0, 0, 0, .22);             /* a recessed area: the result box, the key badge */
+  --chip-bg: rgba(6, 10, 18, .35);         /* the little round badges */
+  --vs-bg: rgba(7, 12, 22, .6);            /* the VS disc */
+
+  /* shadows */
+  --panel-shadow: 0 30px 70px -42px rgba(0, 0, 0, .9);
+  --lift-shadow: 0 18px 32px -22px rgba(0, 0, 0, .95);
+  --hand-shadow: drop-shadow(0 14px 22px rgba(0, 0, 0, .45));
+  --bloom: rgb(var(--teal-rgb) / .7);      /* neon halo: it only works on a dark page */
+
+  /* the two accent values that are not the same in a pale theme */
+  --edge: .55;                             /* how strong an accent underline is */
+  --streak-bg: rgb(var(--gold-rgb) / .1);  /* the win-streak badge */
+
+  --display: "Outfit", "Segoe UI", system-ui, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
+
+  /* The few measurements the whole page reuses. Everything else is a one-off size. */
+  --pad: 18px;     /* padding inside a panel */
+  --gap: 16px;     /* space between two blocks */
+  --label: 9.5px;  /* small uppercase label text */
+  --body: 12.5px;  /* normal text */
+  --radius: 18px;  /* corners of the inner boxes */
+  --pill: 999px;   /* fully rounded corners */
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--display);
+  color: var(--text);
+  background:
+    radial-gradient(900px 620px at 6% -12%, rgb(var(--teal-rgb) / .14), transparent 62%),
+    radial-gradient(760px 560px at 102% 108%, rgb(var(--coral-rgb) / .13), transparent 60%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 60%);
+  background-attachment: fixed;
+}
+
+.page {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 34px 36px 24px;
+}
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+}
+.brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  font-size: 19px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgb(var(--teal-rgb) / .22), rgb(var(--teal-rgb) / .05));
+  border: 1px solid rgb(var(--teal-rgb) / .3);
+  box-shadow: 0 8px 24px -14px var(--bloom);
+}
+.brand-text {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.brand-dot { color: var(--teal); }
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* The course chip and the round badges in the arena are the same little pill. */
+.course-chip, .pill {
+  padding: 6px 11px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  border-radius: var(--pill);
+}
+.course-chip { color: var(--soft); }
+/* The two topbar buttons. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font: 600 13px/1 var(--display);
+  color: var(--text);
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: var(--pill);
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s ease-out;
+}
+.btn:hover {
+  background: var(--wash-strong);
+  border-color: var(--line-strong);
+}
+.btn:active { transform: scale(.96); }
+.btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 36px;
+  margin: 32px 0 28px;
+}
+.eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.hero-title {
+  margin: 0;
+  font-size: 66px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.035em;
+}
+.word { display: inline-block; }
+.word + .word { margin-left: .06em; }
+.word-paper { color: var(--teal); }
+.word-scissors { color: var(--coral); }
+.hero-sub {
+  max-width: 320px;
+  margin: 0 0 5px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 2px 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--text);
+  background: var(--wash-strong);
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
+/* Layout: three panels in the left column, the arena fills the right one */
+.game-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas: "score arena" "choices arena" "rules arena";
+  gap: 18px;
+}
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--panel-shadow);
+}
+
+/* Score */
+.score-panel {
+  grid-area: score;
+  padding: 6px;
+}
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.score-item {
+  padding: 14px 6px 12px;
+  text-align: center;
+}
+.score-item + .score-item { border-left: 1px solid var(--line); }
+.score-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.score-value {
+  display: block;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums; /* all digits the same width, so "11" does not jump around */
+}
+.score-player { color: var(--teal); }
+.score-draw { color: var(--gold); }
+.score-cpu { color: var(--coral); }
+
+/* Choices */
+.choices-panel {
+  grid-area: choices;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad) var(--pad) var(--gap);
+}
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.panel-head h2 {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.panel-hint {
+  font-family: var(--mono);
+  font-size: var(--label);
+  color: var(--soft);
+}
+.choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 112px;
+  padding: var(--gap) 8px var(--pad);
+  font-family: inherit;
+  color: var(--text);
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform .25s ease-out, background .2s, border-color .2s, box-shadow .25s ease-out;
+}
+.choice:hover {
+  transform: translateY(-4px);
+  background: var(--wash-strong);
+  border-color: var(--line-strong);
+  box-shadow: var(--lift-shadow);
+}
+.choice:active { transform: translateY(-1px) scale(.985); }
+.choice-emoji {
+  font-size: 33px;
+  line-height: 1;
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, .35));
+  transition: transform .25s ease-out;
+}
+.choice:hover .choice-emoji { transform: translateY(-2px) scale(1.06); }
+.choice-name {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.choice-key {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-width: 0;
+  padding: 1px 4px;
+  font-size: 9px;
+  color: var(--soft);
+  background: var(--inset);
+  border-color: var(--line);
+  border-bottom-width: 1px;
+}
+.choice.is-selected {
+  border-color: rgb(var(--teal-rgb) / .55);
+  background: linear-gradient(180deg, rgb(var(--teal-rgb) / .14), rgb(var(--teal-rgb) / .04));
+  box-shadow: 0 0 0 3px rgb(var(--teal-rgb) / .12);
+}
+.choice:disabled {
+  cursor: default;
+  opacity: .62;
+}
+.choice.is-selected:disabled { opacity: 1; }
+.choice:disabled:hover {
+  transform: none;
+  background: var(--wash);
+  border-color: var(--line);
+  box-shadow: none;
+}
+.tip {
+  margin: var(--gap) 0 0;
+  padding-top: 13px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--soft);
+  border-top: 1px solid var(--line);
+}
+.choices-panel .tip { margin-top: auto; }
+.tip strong {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Rules */
+.rules-panel {
+  grid-area: rules;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad) var(--pad) var(--gap);
+}
+.rules-panel .panel-head { margin-bottom: 8px; }
+.rules-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rules-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--soft);
+}
+.rule-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 72px;
+  font-size: 14px;
+}
+.rule-arrow {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--soft);
+}
+
+/* Arena */
+.arena-panel {
+  grid-area: arena;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-height: 500px;
+  padding: 22px;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% -20%, rgb(var(--teal-rgb) / .09), transparent 55%),
+    radial-gradient(100% 80% at 100% 120%, rgb(var(--coral-rgb) / .09), transparent 60%),
+    var(--panel-bg);
+}
+.arena-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+/* only what the round badge has and the course chip does not */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  background: var(--chip-bg);
+}
+.pill b { color: var(--text); }
+.streak-pill {
+  color: var(--gold);
+  background: var(--streak-bg);
+  border-color: rgb(var(--gold-rgb) / .32);
+  animation: streakIn .4s ease-out;
+}
+.streak-pill b { color: var(--gold); }
+.streak-pill[hidden] { display: none; }
+@keyframes streakIn {
+  from { opacity: 0; transform: translateY(-4px) scale(.94); }
+}
+.arena {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 74px 1fr;
+  align-items: stretch;
+  gap: 10px;
+}
+.hand-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: var(--pad) 14px;
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-bottom: 2px solid rgb(var(--accent) / var(--edge));
+  border-radius: 22px;
+}
+/* Each side owns one accent: teal for you, coral for the machine.
+   The underline and the little dot of the tile are both painted with it. */
+.hand-tile.is-player { --accent: var(--teal-rgb); }
+.hand-tile.is-cpu { --accent: var(--coral-rgb); }
+.hand-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  box-shadow: 0 0 10px rgb(var(--accent) / .8);
+}
+.hand-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.12em;
+  font-size: 104px;
+  line-height: 1;
+  filter: var(--hand-shadow);
+}
+.hand-emoji.is-unknown {
+  font-family: var(--mono);
+  font-size: 60px;
+  font-weight: 700;
+  color: var(--ghost);
+  filter: none;
+}
+.hand-name {
+  min-height: 18px;
+  margin: 0;
+  font-size: var(--body);
+  font-weight: 600;
+  color: var(--soft);
+}
+.hand-name.is-known { color: var(--text); }
+.versus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.versus span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  color: var(--soft);
+  background: var(--vs-bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .02);
+}
+.arena.is-shaking .hand-emoji { animation: handShake .62s ease-out; }
+@keyframes handShake {
+  20% { transform: translateY(-10px) rotate(-5deg); }
+  50% { transform: translateY(6px) rotate(5deg); }
+  80% { transform: translateY(-6px) rotate(-2deg); }
+}
+.hand-emoji.is-revealed { animation: handReveal .5s ease-out; }
+@keyframes handReveal {
+  0% { opacity: 0; transform: scale(.55) rotate(-14deg); }
+  65% { transform: scale(1.08) rotate(3deg); }
+}
+
+/* Result */
+.result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 88px;
+  padding: 15px 20px;
+  background: var(--inset);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: background .35s, border-color .35s, box-shadow .35s;
+}
+.result-title {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+}
+.result-sub {
+  margin: 0;
+  font-size: var(--body);
+  line-height: 1.5;
+  color: var(--muted);
+}
+/* The three outcomes differ only in the accent they wear, so each one just
+   names its accent and one rule does the painting for all three. */
+.result[data-state="win"] { --accent: var(--teal-rgb); }
+.result[data-state="lose"] { --accent: var(--coral-rgb); }
+.result[data-state="draw"] { --accent: var(--gold-rgb); }
+.result:not([data-state="idle"]) {
+  background: linear-gradient(90deg, rgb(var(--accent) / .15), rgb(var(--accent) / .035));
+  border-color: rgb(var(--accent) / .38);
+  box-shadow: inset 3px 0 0 rgb(var(--accent));
+}
+.result:not([data-state="idle"]) .result-title { color: rgb(var(--accent)); }
+
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 4px 0;
+  font-size: 11px;
+  color: var(--soft);
+}
+
+/* ---------- Light theme ----------
+   There is not one selector from the page in here: it is the same list of
+   names as :root, with the values of a pale page. script.js writes
+   data-theme on <html>, starting from the setting of the phone or browser,
+   and the button in the topbar flips it. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f4f2ea;
+  --bg-top: #ffffff;
+
+  --text: #141a26;
+  --muted: #4c5566;
+  --soft: #626d80;
+
+  /* the same three accents, dark enough to be read on white */
+  --teal-rgb: 10 125 102;
+  --coral-rgb: 207 74 55;
+  --gold-rgb: 143 101 0;
+
+  /* a hairline is dark ink here, not white */
+  --line: rgba(20, 26, 38, .14);
+  --line-strong: rgba(20, 26, 38, .26);
+
+  /* plain white paint instead of a thin white wash, because the page under it
+     is already pale: a wash of white on white would be invisible */
+  --panel-bg: rgba(255, 255, 255, .7);
+  --wash: rgba(255, 255, 255, .58);
+  --wash-strong: rgba(255, 255, 255, .85);
+  --inset: rgba(255, 255, 255, .55);
+  --chip-bg: rgba(255, 255, 255, .6);
+  --vs-bg: rgba(255, 255, 255, .8);
+
+  /* the shadows carry a little of the ink colour instead of pure black */
+  --panel-shadow: 0 30px 70px -42px rgba(20, 26, 38, .4);
+  --lift-shadow: 0 18px 32px -22px rgba(20, 26, 38, .35);
+  --hand-shadow: drop-shadow(0 14px 22px rgba(20, 26, 38, .22));
+  --bloom: transparent; /* a neon halo would only look dirty on a pale page */
+
+  --edge: 1;                             /* the accents are dark already, so their edges go full strength */
+  --streak-bg: rgb(var(--gold-rgb) / .07); /* .1 pushed the badge text under 4.5:1 */
+}
+
+/* ---------- Smaller window ----------
+   Between the phone and the desktop there is not enough room left of the
+   intro text, so the headline gets a bit smaller and stays on one line. */
+@media (max-width: 1080px) {
+  .hero-title { font-size: 46px; }
+}
+
+/* ---------- Narrow window / phone layout ----------
+   Below 900px the two columns become one stack and the big numbers shrink
+   so everything still fits on a narrow screen. */
+@media (max-width: 900px) {
+  body { background-attachment: scroll; }
+  .page { padding: 22px 16px 18px; }
+  .topbar { flex-wrap: wrap; }
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin: 22px 0 20px;
+  }
+  .hero-title { font-size: 34px; }
+  .hero-sub { max-width: none; }
+  .key-hint, .choice-key { display: none; } /* no keyboard on a phone */
+  .btn { min-height: 44px; }
+  .game-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas:
+      "score"
+      "arena"
+      "choices"
+      "rules";
+  }
+  .arena-panel {
+    min-height: 360px;
+    padding: var(--gap);
+  }
+  .arena {
+    grid-template-columns: 1fr 46px 1fr;
+    gap: 8px;
+  }
+  .hand-emoji { font-size: 62px; }
+  .hand-emoji.is-unknown { font-size: 38px; }
+  .hand-tile {
+    gap: 7px;
+    padding: 14px 8px;
+  }
+  .versus span {
+    width: 38px;
+    height: 38px;
+    font-size: 9.5px;
+  }
+  .score-value { font-size: 32px; }
+  .choice { min-height: 98px; }
+  .result {
+    min-height: 78px;
+    padding: 12px 14px;
+  }
+  .result-title { font-size: 22px; }
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
