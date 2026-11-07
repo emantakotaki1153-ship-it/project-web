@@ -7,7 +7,7 @@ const MOVES = {
 const KEYS = { p: "pierre", f: "feuille", c: "ciseaux" };
 
 // 2. LES RACCOURCIS VERS LE HTML (des fonctions du navigateur qui retrouvent les balises)
-const byId = (id) => document.getElementById(id);     // retrouve la balise qui porte id="..."
+const byId = (id) => document.getElementById(id);     // retrouve la balise qui porte id="...."
 const root = document.documentElement;                // la balise <html> elle-même
 const buttons = document.querySelectorAll(".choice");  // toutes les balises qui portent class="choice"
 
@@ -51,32 +51,43 @@ function playRound(playerMove) {
   });
 
   updateScreen("idle", "Pierre… feuille… ciseaux…", "La machine choisit son coup.");
-  byId("arena").classList.add("is-shaking"); // .classList.add() ajoute une classe CSS
-
-  // setTimeout() est le minuteur du navigateur : il attend 650 ms, puis exécute le bloc
-  timer = setTimeout(() => {
-    // Math.random() donne un nombre entre 0 (inclus) et 1 (exclu) ; Math.floor() arrondit vers le bas : 0, 1 ou 2
-    const cpuMove = ["pierre", "feuille", "ciseaux"][Math.floor(Math.random() * 3)];
-    const p = MOVES[playerMove], c = MOVES[cpuMove];
-
-    // On arrête de secouer les mains et on montre le coup de l'ordinateur
-    byId("arena").classList.remove("is-shaking");
-    setHand("cpu", cpuMove);
-
-    // On compare les deux coups avec des if / else simples, puis on affiche le résultat
-    if (playerMove === cpuMove) {
-      draw++;
-      streak = 0;
-      updateScreen("draw", "Égalité !", `Vous avez tous les deux choisi ${p.name.toLowerCase()}.`);
-    } else if (p.beats === cpuMove) {
-      win++;
+ 
       streak++;
-      updateScreen("win", "Tu gagnes !", `${p.name} ${p.verb} ${c.name.toLowerCase()}.`);
-    } else {
-      lose++;
-      streak = 0;
-      updateScreen("lose", "L'ordinateur gagne !", `${c.name} ${c.verb} ${p.name.toLowerCase()}.`);
-    }
+    document.getElementById("arena").classList.add("is-shaking"); // .classList.add() ajoute une classe CSS
+
+    // setTimeout() est le minuteur du navigateur : il attend 650 ms, puis exécute le bloc
+    // Remplacement de la fonction fléchée () => par une fonction classique
+    timer = setTimeout(function() {
+        
+        // Décomposition du choix aléatoire pour que la logique soit plus claire
+        let options = ["pierre", "feuille", "ciseaux"];
+        let randomNum = Math.floor(Math.random() * 3);
+        let cpuMove = options[randomNum];
+        
+        // Séparation des déclarations de variables (plus propre pour un débutant)
+        let p = MOVES[playerMove];
+        let c = MOVES[cpuMove];
+
+        // On arrête de secouer les mains et on montre le coup de l'ordinateur
+        document.getElementById("arena").classList.remove("is-shaking");
+        setHand("cpu", cpuMove);
+
+        // On compare les deux coups avec des if / else simples, puis on affiche le résultat
+        if (playerMove === cpuMove) {
+            draw = draw + 1;
+            streak = 0;
+            // Remplacement des `backticks` et ${...} par une simple concaténation avec le signe +
+            updateScreen("draw", "Égalité !", "Vous avez tous les deux choisi " + p.name.toLowerCase() + ".");
+        } else if (p.beats === cpuMove) {
+            win = win + 1;
+            streak = streak + 1;
+            updateScreen("win", "Tu gagnes !", p.name + " " + p.verb + " " + c.name.toLowerCase() + ".");
+        } else {
+            lose = lose + 1;
+            streak = 0;
+            updateScreen("lose", "L'ordinateur gagne !", c.name + " " + c.verb + " " + p.name.toLowerCase() + ".");
+        }
+    }, 650); // Fin du setTimeout avec le délai
 
     busy = false;
     buttons.forEach((btn) => btn.disabled = false); // on débloque les boutons pour la manche suivante
