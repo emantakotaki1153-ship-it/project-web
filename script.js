@@ -11,8 +11,9 @@ const byId = (id) => document.getElementById(id);     // retrouve la balise qui 
 const root = document.documentElement;                // la balise <html> elle-même
 const buttons = document.querySelectorAll(".choice");  // toutes les balises qui portent class="choice"
 
-// Les variables du jeu (elles reçoivent leur valeur de départ dans resetGame)
-let win, lose, draw, round, streak, busy, timer;
+// Les variables du jeu (l'état)
+let victoire = 0, defaite = 0, egalite = 0, manche = 0, serie = 0;
+let enCours = false;   // vrai pendant qu'une manche est en cours
 
 // 3. AFFICHE UNE MAIN : change l'emoji et le texte du joueur ("player") ou de l'ordinateur ("cpu")
 function setHand(side, move, fallback = "En attente…") {
@@ -26,31 +27,51 @@ function setHand(side, move, fallback = "En attente…") {
 
 // 4. AFFICHE LE TEXTE ET LES SCORES : la bannière du milieu et les trois compteurs
 function updateScreen(status, title, sub) {
-  byId("result").dataset.state = status;   // .dataset écrit dans data-state="" du HTML
-  byId("resultTitle").textContent = title; // .textContent remplace le texte d'une balise
-  byId("resultSub").textContent = sub;
-  byId("playerScore").textContent = win;
-  byId("cpuScore").textContent = lose;
-  byId("drawScore").textContent = draw;
-  byId("streakNum").textContent = streak;
-  byId("streakPill").hidden = streak < 2;  // .hidden masque le badge tant qu'il y a moins de 2 victoires
+    document.getElementById("result").dataset.state = status; // .dataset écrit dans data-state="" du HTML
+    document.getElementById("resultTitle").textContent = title; // .textContent remplace le texte d'une balise
+    document.getElementById("resultSub").textContent = sub;
+    document.getElementById("playerScore").textContent = win;
+    document.getElementById("cpuScore").textContent = lose;
+    document.getElementById("drawScore").textContent = draw;
+    document.getElementById("streakNum").textContent = streak;
+    
+    // Remplacement du booléen direct par un if/else classique
+    if (streak < 2) {
+        document.getElementById("streakPill").hidden = true;
+    } else {
+        document.getElementById("streakPill").hidden = false;
+    }
 }
 
 // 5. JOUE UNE MANCHE : tout s'enchaîne de haut en bas à partir du coup choisi
 function playRound(playerMove) {
-  if (busy) return; // une seule manche à la fois
-  busy = true;
-  byId("roundNum").textContent = ++round; // ajoute 1 au compteur, puis affiche la nouvelle valeur
+    if (busy === true) {
+        return; // une seule manche à la fois
+    }
+    busy = true;
+    
+    // Décomposition de l'incrémentation (plus scolaire)
+    round = round + 1;
+    document.getElementById("roundNum").textContent = round;
 
-  // On montre le coup du joueur, on cache celui de l'ordinateur, on bloque les boutons
-  setHand("player", playerMove);
-  setHand("cpu", null, "Il réfléchit…");
-  buttons.forEach((btn) => { // .forEach() est une boucle : le bloc s'exécute pour chaque bouton
-    btn.disabled = true;     // .disabled grise le bouton et empêche de cliquer dessus
-    btn.classList.toggle("is-selected", btn.dataset.move === playerMove);
-  });
+    // On montre le coup du joueur, on cache celui de l'ordinateur, on bloque les boutons
+    setHand("player", playerMove);
+    setHand("cpu", null, "Il réfléchit...");
+    
+    // Remplacement du .forEach et de la fonction fléchée par une boucle "for" classique
+    for (let i = 0; i < buttons.length; i++) {
+        let btn = buttons[i];
+        btn.disabled = true; // grise le bouton et empêche de cliquer dessus
+        
+        // Remplacement du classList.toggle(..., condition) par un if/else standard
+        if (btn.dataset.move === playerMove) {
+            btn.classList.add("is-selected");
+        } else {
+            btn.classList.remove("is-selected");
+        }
+    }
 
-  updateScreen("idle", "Pierre… feuille… ciseaux…", "La machine choisit son coup.");
+    updateScreen("idle", "Pierre… feuille… ciseaux…", "La machine choisit son coup.");
   byId("arena").classList.add("is-shaking"); // .classList.add() ajoute une classe CSS
 
   // setTimeout() est le minuteur du navigateur : il attend 650 ms, puis exécute le bloc
